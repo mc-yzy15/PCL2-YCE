@@ -1,4 +1,4 @@
-﻿Imports PCL.Core.Utils
+Imports PCL.Core.Utils
 Imports System.Windows
 
 Public Class PageLaunchLeft
@@ -118,7 +118,7 @@ Public Class PageLaunchLeft
         Select Case SelectedProfile.Type
             Case McLoginType.Legacy
                 LabLaunchingMethod.Text = "离线验证"
-            Case McLoginType.Ms
+            Case McLoginType.Auth
                 LabLaunchingMethod.Text = "正版验证"
             Case McLoginType.Auth
                 LabLaunchingMethod.Text = "第三方验证" & If(Not SelectedProfile.ServerName = "", " / " & SelectedProfile.ServerName, "")
@@ -196,9 +196,7 @@ Public Class PageLaunchLeft
             Case PageType.Auth
                 If IsNothing(FrmLoginAuth) Then FrmLoginAuth = New PageLoginAuth
                 Return FrmLoginAuth
-            Case PageType.Ms
-                If IsNothing(FrmLoginMs) Then FrmLoginMs = New PageLoginMs
-                Return FrmLoginMs
+            
             Case PageType.Profile
                 If IsNothing(FrmLoginProfile) Then FrmLoginProfile = New PageLoginProfile
                 Return FrmLoginProfile
@@ -218,7 +216,7 @@ Public Class PageLaunchLeft
     ''' <param name="Type">新页面的种类。</param>
     ''' <param name="Anim">是否显示动画。</param>
     Private Function PageChange(Type As PageType, Anim As Boolean)
-        Dim PageNew As Object = FrmLoginMs '初始化一个东西，避免在执行时出现异常导致雪崩
+        Dim PageNew As Object = Nothing '初始化一个东西，避免在执行时出现异常导致雪崩
         Try
 
 #Region "确定更改的页面实例并实例化"
@@ -270,7 +268,7 @@ Public Class PageLaunchLeft
     Public Sub RefreshPage(Anim As Boolean, Optional TargetLoginType As McLoginType = Nothing)
         Dim Type As PageType
         If Not TargetLoginType = Nothing Then
-            If TargetLoginType = McLoginType.Ms Then Type = PageType.Ms
+            If TargetLoginType = McLoginType.Auth Then Type = PageType.Ms
             If TargetLoginType = McLoginType.Auth Then Type = PageType.Auth
             If TargetLoginType = McLoginType.Legacy Then Type = PageType.Offline
         Else
@@ -644,3 +642,6 @@ ExitRefresh:
     End Sub
 
 End Class
+
+
+

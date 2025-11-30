@@ -463,14 +463,7 @@ Public Class PageOtherTest
                                If ID.Count < 3 Then
                                    Hint("这不是一个有效的 ID...")
                                Else
-                                   Dim Result As String = McLoginMojangUuid(ID, True)
-                                   Result = McSkinGetAddress(Result, "Mojang")
-                                   Result = McSkinDownload(Result)
-                                   RunInUi(Sub()
-                                               Dim Path As String = SystemDialogs.SelectSaveFile("保存皮肤", ID & ".png", "皮肤图片文件(*.png)|*.png")
-                                               CopyFile(Result, Path)
-                                               Hint($"玩家 {ID} 的皮肤已保存！", HintType.Finish)
-                                           End Sub)
+                                   Hint("正版皮肤获取功能已移除", HintType.Info)
                                End If
                            Catch ex As Exception
                                If ex.ToString().Contains("429") Then

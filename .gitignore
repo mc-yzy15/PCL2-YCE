@@ -346,3 +346,6 @@ MaskFiles/
 # macOS
 
 **/.DS_Store
+.trae/documents/去除强制正版验证并编译.md
+.trae/documents/删除正版验证功能.md
+.trae/documents/修复编译警告.md

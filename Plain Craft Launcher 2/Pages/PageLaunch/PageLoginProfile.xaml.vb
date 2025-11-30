@@ -1,4 +1,4 @@
-﻿Imports System.Collections.ObjectModel
+Imports System.Collections.ObjectModel
 
 Class PageLoginProfile
     ''' <summary>
@@ -16,13 +16,13 @@ Class PageLoginProfile
     Public Class ProfileItem
         Public ReadOnly Property Info As String
         Public ReadOnly Property Logo As String
-        Public ReadOnly Property Profile As McProfile
+        Public ReadOnly Property Profile 
         Public ReadOnly Property Username As String
             Get
                 Return Profile.Username
             End Get
         End Property
-        Public Sub New(profile As McProfile)
+        Public Sub New(profile )
             Me.Profile = profile
             Info = GetProfileInfo(profile)
             Dim LogoPath As String = PathTemp & $"Cache\Skin\Head\{Profile.SkinHeadId}.png"
@@ -63,7 +63,6 @@ Class PageLoginProfile
         SaveProfile() '保存档案配置，确保切换后的档案被正确保存
 
         '清除登录验证缓存，确保使用新档案的验证信息
-        McLoginMsLoader.State = LoadState.Waiting
         McLoginAuthLoader.State = LoadState.Waiting
         McLoginLegacyLoader.State = LoadState.Waiting
 
@@ -128,3 +127,5 @@ Class PageLoginProfile
 #End Region
 
 End Class
+
+

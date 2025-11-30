@@ -1,4 +1,4 @@
-﻿Class PageLoginProfileSkin
+Class PageLoginProfileSkin
     Public Sub New()
         InitializeComponent()
     End Sub
@@ -9,11 +9,7 @@
     Public Sub Reload() Handles Me.Loaded
         Log("[Profile] 刷新档案界面")
         Skin.Clear()
-        If SelectedProfile.Type = McLoginType.Ms Then
-            BtnEdit.Visibility = Visibility.Visible
-            Log("[Profile] 使用正版皮肤加载器")
-            Skin.Loader = PageLaunchLeft.SkinMs
-        ElseIf SelectedProfile.Type = McLoginType.Auth Then
+        If SelectedProfile.Type = McLoginType.Auth Then
             BtnEdit.Visibility = Visibility.Visible
             Log("[Profile] 使用 Authlib 皮肤加载器")
             Skin.Loader = PageLaunchLeft.SkinAuth
@@ -49,9 +45,7 @@
     End Sub
     '修改密码
     Private Sub BtnEditPassword_Click(sender As Object, e As RoutedEventArgs)
-        If SelectedProfile.Type = McLoginType.Ms Then
-            OpenWebsite("https://account.live.com/password/Change")
-        ElseIf SelectedProfile.Type = McLoginType.Auth Then
+        If SelectedProfile.Type = McLoginType.Auth Then
             Dim Server As String = SelectedProfile.Server
             OpenWebsite(Server.ToString.Replace("/api/yggdrasil/authserver" + If(Server.EndsWithF("/"), "/", ""), "/user/profile"))
         Else
@@ -60,7 +54,7 @@
     End Sub
     '修改 ID
     Private Sub BtnEditName_Click(sender As Object, e As RoutedEventArgs)
-        EditProfileId()
+        EditProfileId(SelectedProfile)
     End Sub
     '选择档案
     Private Sub ChangeProfile(sender As Object, e As EventArgs) Handles BtnSelect.Click
@@ -72,9 +66,7 @@
     End Sub
     '修改皮肤
     Private Sub Skin_Click(sender As Object, e As RoutedEventArgs)
-        If SelectedProfile.Type = McLoginType.Ms Then
-            ChangeSkinMs()
-        ElseIf SelectedProfile.Type = McLoginType.Auth Then
+        If SelectedProfile.Type = McLoginType.Auth Then
             OpenWebsite(SelectedProfile.Server.BeforeFirst("api/yggdrasil/authserver") + "user/closet")
         Else
             Hint("当前档案不支持修改皮肤！")
@@ -90,9 +82,7 @@
     End Sub
     '修改披风
     Private Sub BtnSkinCape_Click(sender As Object, e As RoutedEventArgs)
-        If SelectedProfile.Type = McLoginType.Ms Then
-            Skin.BtnSkinCape_Click()
-        ElseIf SelectedProfile.Type = McLoginType.Auth Then
+        If SelectedProfile.Type = McLoginType.Auth Then
             OpenWebsite(SelectedProfile.Server.BeforeFirst("api/yggdrasil/authserver") + "user/closet")
         Else
             Hint("当前档案不支持修改披风！")
@@ -100,3 +90,4 @@
     End Sub
 #End Region
 End Class
+
