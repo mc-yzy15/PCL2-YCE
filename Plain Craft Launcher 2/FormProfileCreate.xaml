@@ -1,0 +1,92 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:PCL"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Name="WindProfileCreate" x:Class="FormProfileCreate" Style="{StaticResource MyWindow}"
+        Title="新建档案" AllowsTransparency="True" MinHeight="350" MinWidth="400" 
+        ScrollViewer.VerticalScrollBarVisibility="Disabled" Icon="/Plain Craft Launcher 2;component/Images/icon.ico" WindowStyle="None" 
+        ResizeMode="NoResize" Background="{x:Null}" d:DesignWidth="450" d:DesignHeight="400" Width="450" Height="400" WindowStartupLocation="CenterOwner"
+        RenderTransformOrigin="0.5,0.5">
+    <Grid x:Name="PanBack" SnapsToDevicePixels="True" UseLayoutRounding="True" Margin="10" RenderTransformOrigin="0.5,0.5">
+        <Border Margin="8" x:Name="BorderForm">
+            <Border.Clip>
+                <RectangleGeometry x:Name="RectForm" RadiusX="6" RadiusY="6" />
+            </Border.Clip>
+            <Grid x:Name="PanForm" SnapsToDevicePixels="False" UseLayoutRounding="False">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <!-- 标题栏 -->
+                <Grid x:Name="PanTitle" Height="30" VerticalAlignment="Top" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="30" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="LabTitle" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0" FontSize="14" FontWeight="Bold" Text="新建档案" />
+                    <local:MyIconButton x:Name="BtnClose" Grid.Column="1" Height="20" Width="20" Margin="5" Icon="A" ToolTip="关闭" Click="BtnClose_Click" />
+                </Grid>
+                
+                <!-- 内容区域 -->
+                <Grid x:Name="PanContent" Grid.Row="1" Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- 档案类型选择 -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,5,10,5" Text="档案类型：" />
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,5">
+                        <local:MyRadioBox x:Name="RadioOffline" Content="离线" IsChecked="True" Margin="0,0,15,0" GroupName="ProfileType" />
+                        <local:MyRadioBox x:Name="RadioAuth" Content="第三方登录" GroupName="ProfileType" />
+                    </StackPanel>
+                    
+                    <!-- 用户名 -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,5,10,5" Text="用户名：" />
+                    <local:MyTextBox Grid.Row="1" Grid.Column="1" Height="28" x:Name="TextUsername" ToolTip="3 - 16 位，只可以包含英文字母、数字与下划线" />
+                    
+                    <!-- 描述 -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,5" Text="描述：" />
+                    <local:MyTextBox Grid.Row="2" Grid.Column="1" Height="60" x:Name="TextDescription" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+                    
+                    <!-- 服务器（第三方登录） -->
+                    <TextBlock Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,5,10,5" Text="服务器：" />
+                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Vertical" Margin="0,5">
+                        <local:MyComboBox x:Name="ComboServer" Height="28" IsEditable="True" IsTextSearchEnabled="False" />
+                        <TextBlock x:Name="LabServerHint" Margin="0,3,0,0" FontSize="11" Foreground="Gray" Text="示例：https://authserver.example.org" />
+                    </StackPanel>
+                    
+                    <!-- 密码（第三方登录） -->
+                    <TextBlock Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,5,10,5" Text="密码：" />
+                    <PasswordBox Grid.Row="4" Grid.Column="1" Height="28" x:Name="TextPassword" />
+                    
+                    <!-- 空白行 -->
+                    <Grid Grid.Row="5" />
+                </Grid>
+                
+                <!-- 按钮区域 -->
+                <Grid x:Name="PanButtons" Grid.Row="2" Height="40" VerticalAlignment="Bottom" Margin="15,10,15,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="10" />
+                        <ColumnDefinition Width="80" />
+                    </Grid.ColumnDefinitions>
+                    <local:MyButton x:Name="BtnCancel" Grid.Column="2" Height="28" Width="80" Content="取消" Click="BtnCancel_Click" />
+                    <local:MyButton x:Name="BtnOK" Grid.Column="3" Height="28" Width="80" Content="确定" Click="BtnOK_Click" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -197,62 +197,17 @@ Public Module ModProfile
     Public Sub CreateProfile()
         IsCreatingProfile = True
         Try
-            Dim RadioBoxes As New List(Of IMyRadio)
-            RadioBoxes.Add(New MyRadioBox With {.Text = "离线模式"})
-            RadioBoxes.Add(New MyRadioBox With {.Text = "第三方验证"})
-            Dim ProfileType As Integer = MyMsgBoxSelect(RadioBoxes, "选择档案类型")
-            If ProfileType = -1 Then Exit Sub
+            ' 创建并显示新建档案窗口
+            Dim profileWindow As New FormProfileCreate With {
+                .Owner = FrmMain.WindMain
+            }
             
-            Select Case ProfileType
-                Case 0 '离线模式
-                    Dim Username As String = MyMsgBoxInput("创建离线档案", "请输入用户名")
-                    If Username Is Nothing Then Exit Sub
-                    If String.IsNullOrWhiteSpace(Username) Then
-                        Hint("用户名不能为空！", HintType.Critical)
-                        Exit Sub
-                    End If
-                    
-                    Dim NewProfile As New McProfile With {
-                        .Type = McLoginType.Legacy,
-                        .Username = Username,
-                        .Uuid = GetOfflineUuid(Username)
-                    }
-                    ProfileList.Add(NewProfile)
-                    SaveProfile()
-                    ProfileLog("创建离线档案成功")
-                    
-                Case 1 '第三方验证
-                    Dim Server As String = MyMsgBoxInput("创建第三方验证档案", "请输入验证服务器地址", "https://authserver.example.org")
-                    If Server Is Nothing Then Exit Sub
-                    If String.IsNullOrWhiteSpace(Server) Then
-                        Hint("服务器地址不能为空！", HintType.Critical)
-                        Exit Sub
-                    End If
-                    
-                    Dim Name As String = MyMsgBoxInput("创建第三方验证档案", "请输入用户名")
-                    If Name Is Nothing Then Exit Sub
-                    If String.IsNullOrWhiteSpace(Name) Then
-                        Hint("用户名不能为空！", HintType.Critical)
-                        Exit Sub
-                    End If
-                    
-                    Dim Password As String = MyMsgBoxInput("创建第三方验证档案", "请输入密码", "")
-                    If Password Is Nothing Then Exit Sub
-                    If String.IsNullOrWhiteSpace(Password) Then
-                        Hint("密码不能为空！", HintType.Critical)
-                        Exit Sub
-                    End If
-                    
-                    Dim NewProfile As New McProfile With {
-                        .Type = McLoginType.Auth,
-                        .Name = Name,
-                        .Password = Password,
-                        .Server = Server
-                    }
-                    ProfileList.Add(NewProfile)
-                    SaveProfile()
-                    ProfileLog("创建第三方验证档案成功")
-            End Select
+            If profileWindow.ShowDialog() = True AndAlso profileWindow.CreateResult Then
+                ' 添加新档案到列表
+                ProfileList.Add(profileWindow.NewProfile)
+                SaveProfile()
+                ProfileLog("创建档案成功")
+            End If
         Catch ex As Exception
             Log(ex, "创建档案失败", LogLevel.Feedback)
         Finally
