@@ -1,0 +1,37 @@
+name: Auto Revert Specified Commit
+
+on:
+  push:
+    branches: [dev] # 当有代码推送到dev分支时触发
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  revert-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 获取完整的提交历史
+
+      - name: Revert specified commit
+        run: |
+          # 指定要还原的提交ID
+          TARGET_COMMIT="77627d16565637151db85768c8a8fe0da7f28ca5"
+
+          # 检查提交是否存在
+          if git rev-parse --verify "$TARGET_COMMIT" > /dev/null 2>&1; then
+            echo "Found commit $TARGET_COMMIT, proceeding with revert..."
+            
+            # 还原提交，生成还原提交
+            git revert --no-edit "$TARGET_COMMIT"
+            
+            # 推回仓库
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git push origin dev
+            
+            echo "Successfully reverted commit $TARGET_COMMIT"
+          else
+            echo "Commit $TARGET_COMMIT not found in the repository."
+          fi
