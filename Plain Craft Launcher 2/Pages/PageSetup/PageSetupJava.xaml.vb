@@ -1,4 +1,4 @@
-Imports PCL.Core.Minecraft
+﻿Imports PCL.Core.Minecraft
 Imports PCL.Core.UI
 
 Public Class PageSetupJava
@@ -119,7 +119,7 @@ Public Class PageSetupJava
         JavaPageLoader.Start(True, True)
     End Sub
 
-    Private Async Sub BtnAdd_Click(sender As Object, e As RouteEventArgs) Handles BtnAdd.Click
+    Private Async Function BtnAdd_Click(sender As Object, e As RouteEventArgs) As Task Handles BtnAdd.Click
         Dim ret = SystemDialogs.SelectFile("Java 程序(java.exe)|java.exe", "选择 Java 程序")
         If String.IsNullOrEmpty(ret) OrElse Not File.Exists(ret) Then Return
         If JavaService.JavaManager.HasJava(ret) Then
@@ -136,6 +136,6 @@ Public Class PageSetupJava
                 Hint("未能成功将 Java 加入列表中", HintType.Critical)
             End If
         End If
-    End Sub
+    End Function
 
 End Class

@@ -1,4 +1,4 @@
-Imports System.Collections.ObjectModel
+﻿Imports System.Collections.ObjectModel
 Imports System.IO
 Imports System.Threading.Tasks
 Imports fNbt
@@ -177,9 +177,9 @@ Public Class PageInstanceServer
             ServerCardList.Add(serverCard)
             PanServers.Children.Add(serverCard)
 
-            Task.Run(Sub()
-                         serverCard.RefreshServerStatus(False).Wait()
-                     End Sub)
+            Task.Run(Async Function()
+                Await serverCard.RefreshServerStatus(False)
+            End Function)
             
             Dim serversDatPath = Path.Combine(PageInstanceLeft.Instance.PathIndie, "servers.dat")
             

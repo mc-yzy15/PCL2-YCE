@@ -682,7 +682,12 @@ PCL-Community 及其成员与龙腾猫跃无从属关系，且均不会为您的
     Public IsCheckingUpdates As Boolean = False
     Public IsUpdateWaitingRestart As Boolean = False
     Public RemoteServer As New UpdatesWrapperModel({
-        New UpdatesMinioModel("https://github.com/mc-yzy15/PCL2-YCE/releases/latest/download/", "GitHub")
+        New UpdatesMirrorChyanModel(),
+        New UpdatesRandomModel({
+                New UpdatesMinioModel("https://s3.pysio.online/pcl2-ce/", "Pysio"),
+                New UpdatesMinioModel("https://staticassets.naids.com/resources/pclce/", "Naids")
+            }),
+        New UpdatesMinioModel("https://github.com/PCL-Community/PCL2_CE_Server/raw/main/", "GitHub")
     })
     Public ReadOnly Property IsUpdBetaChannel
         Get

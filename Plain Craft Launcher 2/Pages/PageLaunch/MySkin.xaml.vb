@@ -1,4 +1,4 @@
-Imports System.Drawing
+﻿Imports System.Drawing
 Imports PCL.Core.UI
 Imports PCL.Core.Utils.OS
 
@@ -247,9 +247,103 @@ Public Class MySkin
     End Property
     Private IsChanging As Boolean = False
     Public Sub BtnSkinCape_Click() Handles BtnSkinCape.Click
-        '披风功能仅支持正版验证，已禁用
-        Hint("披风功能仅支持正版验证，已禁用！", HintType.Critical)
+        '检查条件，获取新披风
+        If IsChanging Then
+            Hint("正在更改披风中，请稍候！")
+            Return
+        End If
+        If McLoginMsLoader.State = LoadState.Failed Then
+            Hint("登录失败，无法更改披风！", HintType.Critical)
+            Return
+        End If
+        Hint("正在获取披风列表，请稍候……")
+        IsChanging = True
+        '开始实际获取
+        RunInNewThread(
+        Sub()
+            Try
+                '获取登录信息
+                If McLoginMsLoader.State <> LoadState.Finished Then McLoginMsLoader.WaitForExit(GetLoginData())
+                If McLoginMsLoader.State <> LoadState.Finished Then
+                    Hint("登录失败，无法更改披风！", HintType.Critical)
+                    Return
+                End If
+                Dim AccessToken As String = McLoginMsLoader.Output.AccessToken
+                Dim Uuid As String = McLoginMsLoader.Output.Uuid
+                Dim SkinData As JObject = GetJson(McLoginMsLoader.Output.ProfileJson)
+                For Each itemSkin In SkinData("capes")
+                    If itemSkin("url") Is Nothing Then Continue For
+                    Dim localFile = $"{PathTemp}Cache\Capes\{itemSkin("alias")}.png"
+                    Dim capeFrontFile = $"{PathTemp}Cache\Capes\{itemSkin("alias")}-front.png"
+                    If File.Exists(localFile) AndAlso File.Exists(capeFrontFile) Then
+                        itemSkin("url") = capeFrontFile
+                        Continue For
+                    End If
+                    NetDownloadByLoader(itemSkin("url").ToString(), localFile)
+                    Dim capeFrontRegion As New Rectangle(1, 0, 11, 17)
+                    Dim capeFront As New Bitmap(capeFrontRegion.Width, capeFrontRegion.Height)
+                    Dim capeImage = Image.FromFile(localFile)
+                    Dim gra = Graphics.FromImage(capeFront)
+                    gra.DrawImage(capeImage, capeFrontRegion, capeFrontRegion, GraphicsUnit.Pixel)
+                    capeFront.Save(capeFrontFile)
+                    itemSkin("url") = capeFrontFile
+                Next
+                '获取玩家的所有披风
+                Dim SelId As Integer? = Nothing
+                RunInUiWait(
+                Sub()
+                    Try
+                        Dim CapeNames As New Dictionary(Of String, String) From {
+                            {"Migrator", "迁移者披风"}, {"MapMaker", "Realms 地图制作者披风"}, {"Moderator", "Mojira 管理员披风"},
+                            {"Translator-Chinese", "Crowdin 中文翻译者披风"}, {"Translator", "Crowdin 翻译者披风"}, {"Cobalt", "Cobalt 披风"},
+                            {"Vanilla", "原版披风"}, {"Minecon2011", "Minecon 2011 参与者披风"}, {"Minecon2012", "Minecon 2012 参与者披风"},
+                            {"Minecon2013", "Minecon 2013 参与者披风"}, {"Minecon2015", "Minecon 2015 参与者披风"}, {"Minecon2016", "Minecon 2016 参与者披风"},
+                            {"Cherry Blossom", "樱花披风"}, {"15th Anniversary", "15 周年纪念披风"}, {"Purple Heart", "紫色心形披风"},
+                            {"Follower's", "追随者披风"}, {"MCC 15th Year", "MCC 15 周年披风"}, {"Minecraft Experience", "村民救援披风"},
+                            {"Mojang Office", "Mojang 办公室披风"}, {"Home", "家园披风"}, {"Menace", "入侵披风"}, {"Yearn", "渴望披风"},
+                            {"Common", "普通披风"}, {"Pan", "薄煎饼披风"}, {"Founder's", "创始人披风"}, {"Copper", "铜披风"}
+                        }
+                        Dim SelectionControl As New List(Of IMyRadio) From {New MyListItem With {
+                            .Title = "无披风",
+                            .Info = "Null"
+                        }}
+                        For Each Cape In SkinData("capes")
+                            Dim CapeName As String = Cape("alias").ToString()
+                            If CapeNames.ContainsKey(CapeName) Then CapeName = CapeNames(CapeName)
+                            Dim state = Cape("state") '检测披风状态，若为 ACTIVE 则选中
+                            Dim active As Boolean = state IsNot Nothing And state.ToString().ToUpper().Equals("ACTIVE")
+                            SelectionControl.Add(New MyListItem With {
+                                                     .Title = CapeName,
+                                                     .Info = Cape("alias").ToString(),
+                                                     .Checked = active,
+                                                     .Type = MyListItem.CheckType.RadioBox,
+                                                     .Logo = Cape("url"),
+                                                     .LogoScale = 0.8
+                                                 })
+                        Next
+                        SelId = MyMsgBoxSelect(SelectionControl, "选择披风", "确定", "取消")
+                    Catch ex As Exception
+                        Log(ex, "获取玩家皮肤列表失败", LogLevel.Feedback)
+                    End Try
+                End Sub)
+                If SelId Is Nothing Then Return
+                '发送请求
+                Dim Result As String = NetRequestRetry("https://api.minecraftservices.com/minecraft/profile/capes/active",
+                            If(SelId = 0, "DELETE", "PUT"),
+                            If(SelId = 0, "", New JObject(New JProperty("capeId", SkinData("capes")(SelId - 1)("id"))).ToString(0)),
+                            "application/json", Headers:=New Dictionary(Of String, String) From {{"Authorization", "Bearer " & AccessToken}})
+                If Result.Contains("""errorMessage""") Then
+                    Hint("更改披风失败：" & GetJson(Result)("errorMessage"), HintType.Critical)
+                    Return
+                Else
+                    Hint("更改披风成功！等待一段时间后将会生效……", HintType.Finish)
+                End If
+            Catch ex As Exception
+                Log(ex, "更改披风失败", LogLevel.Hint)
+            Finally
+                IsChanging = False
+            End Try
+        End Sub, "Cape Change")
     End Sub
 
 End Class
-
